@@ -1,5 +1,14 @@
 const Discord = require("discord.js");
-const client = new Discord.Client();
+
+const client = new Discord.Client({
+  intents: [
+    Discord.IntentsBitField.Flags.Guilds,
+    Discord.IntentsBitField.Flags.GuildMessages,
+    Discord.IntentsBitField.Flags.GuildMessageReactions,
+    Discord.IntentsBitField.Flags.MessageContent,
+  ],
+});
+
 const path = require("path");
 const fs = require("fs");
 
@@ -62,7 +71,7 @@ let botConfig = require("./config.json");
 
 function botStats() {
 	let stats = [];
-	client.guilds.forEach(function (guild) {
+	client.guilds.cache.map(function (guild) {
 		let embed = {
 			author: {
 				name: guild.name,
@@ -117,7 +126,7 @@ client.on("ready", async () => {
 	console.info(`${banner}v${version}`);
 
 	// Create or update configuration files for each server the bot is present in.
-	client.guilds.forEach (function (guild) {
+	client.guilds.cache.map(function (guild) {
 		if (guild.deleted)  {
 			serverConfig.deleteServerConfig(guild.id);
 		} else {
@@ -132,51 +141,55 @@ client.on("ready", async () => {
 		console.log(`Connected to ${client.guilds.size} servers.`);
 
 	// Set game status
-	client.user.setActivity("Bot Usage: type !uwuhelp\nhttps://github.com/SamusAranX/uwubot");
+	client.user.setActivity("Bot Usage: type !uwuhelp");
 });
 
 // Executed when a new message is received
-client.on("message", async message => {
+client.on("messageCreate", async message => {
 	if (message.author.bot)
 		return;
 
-	if (message.content) {
-		let command = message.content.match(/^\!\w+/);
+	if (!message.content) return; 
 
-		if (command) {
-			//** Process command text and arguments
+	let command = message.content.match(/^\!\w+/);
 
-			// commandText is the command without the !
-			let commandText = command[0].substr(1);
-			let commandArgs = message.content.replace(command[0], '');
+	if (!command) return;
 
-			// Remove leading space from arguments
-			commandArgs = commandArgs.trimStart();
+	//** Process command text and arguments
 
-			if (commandText === "uwuhelp") {
-				// Allow !uwuhelp usage outside of servers
-				message.channel.send(help);
-			} else if (commandText === "uwuinfo" && botConfig.superUsers.includes(message.author.id) && message.guild === null) {
-				// Allow superusers to see what servers uwubot has been added to
-				message.author.send("**Joined Servers:**");
-				botStats().forEach(function (stat) {
-					message.author.send(stat);
-				});
-			} else {
-				// Pass commands to bot modules
-				for (let commandHandlerName in commandHandlers) {
-					if (commandText === commandHandlerName) {
-						if (!message.guild) {
-							message.channel.send("This command must be run in a server.");
-							return;
-						}
+	// commandText is the command without the !
+	let commandText = command[0].substr(1);
+	let commandArgs = message.content.replace(command[0], '');
 
-						commandHandlers[commandHandlerName](message, commandArgs);
+	// Remove leading space from arguments
+	commandArgs = commandArgs.trimStart();
+
+	if (commandText === "uwuhelp") {
+		// Allow !uwuhelp usage outside of servers
+		message.reply(help);
+	} else if (commandText === "uwuinfo" && botConfig.superUsers.includes(message.author.id) && message.guild === null) {
+		// Allow superusers to see what servers uwubot has been added to
+		message.author.send("**Joined Servers:**");
+		botStats().forEach(function (stat) {
+			message.author.send(stat);
+		});
+	} else {
+		// Pass commands to bot modules
+		for (let commandHandlerName in commandHandlers) {
+			try {
+				if (commandText === commandHandlerName) {
+					if (!message.guild) {
+						message.reply("This command must be run in a server.");
+						return;
 					}
+	
+					commandHandlers[commandHandlerName](message, commandArgs);
 				}
+			} catch (e) {
+				console.error(e);
 			}
 		}
-	};
+	}
 });
 
 client.on("error", async error => {

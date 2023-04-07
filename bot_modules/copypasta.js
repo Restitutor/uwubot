@@ -19,33 +19,33 @@ let commandHandlers = {};
 commandHandlers.pasta = function(message, args) {
 	serverConfig.getServerConfig(message.guild.id).then(function(config) {
 		if (args === "") {
-			message.channel.send("Usage: !pasta <pasta>");
+			message.reply("Usage: !pasta <pasta>");
 			let pastaMessage = ["Available Pasta:", "```"];
 			Object.keys(config.moduleConfig.copypasta).forEach(function(element, index) {
 				pastaMessage.push("* " + element);
 			});
 			pastaMessage.push("```");
 
-			message.channel.send(pastaMessage.join("\n"));
+			message.reply(pastaMessage.join("\n"));
 			return;
 		}
 
 		if (Object.keys(config.moduleConfig.copypasta).indexOf(args) !== -1) {
 			let pasta = config.moduleConfig.copypasta[args];
-			message.channel.send(pasta);
+			message.reply(pasta);
 		} else {
-			message.channel.send("Couldn't find that pasta!");
+			message.reply("Couldn't find that pasta!");
 		};
 	})
 	.catch(function(error) {
-		message.channel.send("There's no copypasta configured for this server. Sorry :(");
+		message.reply("There's no copypasta configured for this server. Sorry :(");
 		console.error("Couldn't load any copypasta: " + error);
 	});
 };
 
 commandHandlers.listpastas = function(message, args) {
 	if (!message.guild) {
-		message.channel.send("This command must be run in a server.")
+		message.reply("This command must be run in a server.")
 		return false;
 	}
 
@@ -60,9 +60,9 @@ commandHandlers.listpastas = function(message, args) {
 				}
 			});
 
-			message.channel.send(pastaMessage + "```");
+			message.reply(pastaMessage + "```");
 		} else {
-		message.channel.send("There's no copypasta configured for this server. Sorry :(");
+		message.reply("There's no copypasta configured for this server. Sorry :(");
 		}
 	});
 };

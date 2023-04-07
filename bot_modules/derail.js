@@ -19,14 +19,14 @@ commandHandlers.derail = function(message, args) {
 	serverConfig.getServerConfig(message.guild.id).then(function(config) {
 		var songList = config.moduleConfig.derail;
 		if (songList.length == 0) {
-			message.channel.send("There are no songs to link to!");
+			message.reply("There are no songs to link to!");
 		} else {
 			var choose = songList[Math.floor(Math.random() * songList.length)];
-			message.channel.send(choose);
+			message.reply(choose);
 		}
 	})
 	.catch(function(error) {
-		message.channel.send("The config file for this server is broken!");
+		message.reply("The config file for this server is broken!");
 		console.error("The config file for this server is broken!");
 		console.error(error);
 	});

@@ -56,7 +56,7 @@ commandHandlers.im = function(message, args) {
 		}
 
 		let imgMeta = images[command];
-		if(!sendImage(messageText, imgMeta, message.channel)) {
+		if(!sendImage(messageText, imgMeta, message)) {
 			message.channel.send("Error: Image generation failed.");
 			return;
 		}
@@ -68,7 +68,7 @@ commandHandlers.im = function(message, args) {
 	});
 };
 
-function sendImage(text, imgMeta, channel) {
+function sendImage(text, imgMeta, message) {
 	let tmpDir     = "bot_modules/imagetext/tmp/";
 	let template   = `bot_modules/imagetext/${imgMeta.template}` ;
 	let font       = `bot_modules/imagetext/fonts/${imgMeta.font}`;
@@ -116,7 +116,7 @@ function sendImage(text, imgMeta, channel) {
 		}
 
 		// print convert command for debugging
-		// console.debug(imCmd, imArgs.join(" "));
+		console.debug(imCmd, imArgs.join(" "));
 
 		// execute imagemagick with the given arguments and get the result
 		let result = spawn.sync(imCmd, imArgs);
@@ -130,9 +130,12 @@ function sendImage(text, imgMeta, channel) {
 			return false;
 		}
 
-		let attachment = new Discord.Attachment(tempFile.name, `${imgMeta.template.split(".").shift()}.png`);
-
-		channel.send("", attachment)
+		message.reply({
+			files: [{
+				attachment: tempFile.name,
+				name: `${imgMeta.template.split(".").shift()}.png`,
+			}],
+		})
 		.then(message => {
 			console.log("Image macro sent!");
 

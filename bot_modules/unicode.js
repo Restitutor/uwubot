@@ -107,8 +107,8 @@ commandHandlers.sheriff = function(message, args) {
 	let sem            = messageContent.match(serverEmojiRegex);
 	let serverEmoji;
 	if (sem)
-		serverEmoji = message.client.emojis.find(emoji => emoji.name == sem[2] && emoji.id == sem[3]);
-	let backupEmoji    = message.client.emojis.find(emoji => emoji.name == messageContent);
+		serverEmoji = message.client.emojis.cache.find(emoji => emoji.name == sem[2] && emoji.id == sem[3]);
+	let backupEmoji    = message.client.emojis.cache.find(emoji => emoji.name == messageContent);
 
 	// console.debug(standardEmoji);
 	// console.debug(sem);
@@ -132,7 +132,7 @@ commandHandlers.sheriff = function(message, args) {
 
 commandHandlers.emoji = function(message, args) {
 	let messageContent = args.trim();
-	let matchingEmoji  = message.client.emojis.find(emoji => emoji.name == messageContent);
+	let matchingEmoji  = message.client.emojis.cache.find(emoji => emoji.name == messageContent);
 
 	if (matchingEmoji) {
 		let emojiTemplate = "<#animated#:#name#:#id#>";

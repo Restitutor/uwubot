@@ -87,7 +87,7 @@ function flickrHandler(term, message, group = false) {
 	}
 
 	result.then(function(picture) {
-		message.channel.send(picture);
+		message.reply(picture);
 	});
 };
 
