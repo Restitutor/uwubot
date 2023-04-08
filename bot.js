@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 
 const client = new Discord.Client({
+  allowedMentions: { parse: [], repliedUser: true },
   intents: [
     Discord.IntentsBitField.Flags.Guilds,
     Discord.IntentsBitField.Flags.GuildMessages,
