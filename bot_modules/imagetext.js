@@ -77,7 +77,6 @@ commandHandlers.im = function (message, args) {
 };
 
 function sendImage(text, imgMeta, message) {
-  let tmpDir = "bot_modules/imagetext/tmp/";
   let template = `bot_modules/imagetext/${imgMeta.template}`;
   let font = `bot_modules/imagetext/fonts/${imgMeta.font}`;
   let emojiFont = "bot_modules/imagetext/fonts/NotoEmoji-Regular.ttf";
@@ -89,12 +88,8 @@ function sendImage(text, imgMeta, message) {
   let background = imgMeta.bgColor;
   let fill = imgMeta.fgColor;
 
-  if (!fs.existsSync(tmpDir)) {
-    fs.mkdirSync(tmpDir);
-  }
-
   // generate random filename in the tmp/ directory
-  let tempFile = tmp.fileSync({ dir: tmpDir });
+  let tempFile = tmp.fileSync({});
 
   let emojiList = onlyEmoji(text);
 
